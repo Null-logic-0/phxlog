@@ -1,13 +1,13 @@
-<Layouts.app flash={@flash}>
+<Layouts.app flash={@flash} current_scope={@current_scope}>
   <h1 class="text-center mb-6 text-4xl font-bold">{@page_title}</h1>
   <div class="flex w-full items-center justify-between pb-6">
     <.live_component
       module={PhxlogWeb.Blogs.Search}
       id="blog-index-search"
       form={@form}
-      navigate_to={~p"/blogs"}
+      navigate_to={~p"/admin/blogs"}
     />
-    <.button variant="primary" navigate={~p"/blogs/new"}>
+    <.button variant="primary" navigate={~p"/admin/blogs/new"}>
       <.icon name="hero-plus" /> New Blog
     </.button>
   </div>
@@ -47,7 +47,7 @@
         <div class="sr-only">
           <.link navigate={~p"/blogs/#{blog}"}>Show</.link>
         </div>
-        <.link navigate={~p"/blogs/#{blog}/edit"}>
+        <.link navigate={~p"/admin/blogs/#{blog}/edit"}>
           <.icon name="hero-pencil-square" class="size-5 text-info" />
         </.link>
       </:action>
@@ -66,7 +66,7 @@
       module={PhxlogWeb.Blogs.Pagination}
       id="blog-index-pagination"
       meta={@meta}
-      base_path={~p"/blogs"}
+      base_path={~p"/admin/blogs"}
       q={@form[:q].value}
     />
   </div>

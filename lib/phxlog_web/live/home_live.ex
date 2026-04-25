@@ -5,6 +5,8 @@ defmodule PhxlogWeb.HomeLive do
 
   @page_size "9"
 
+  on_mount {PhxlogWeb.UserAuth, :mount_current_scope}
+
   def mount(_params, _session, socket) do
     if connected?(socket), do: Blogs.subscribe()
 

@@ -4,9 +4,11 @@ defmodule PhxlogWeb.BlogLive.Show do
   alias Phxlog.Blogs
   import PhxlogWeb.Blogs.FeaturedBlogs
 
+  on_mount {PhxlogWeb.UserAuth, :mount_current_scope}
+
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash}>
+    <Layouts.app flash={@flash} current_scope={@current_scope}>
       <.header>
         <h1 class="text-3xl font-bold">{@blog.title}</h1>
 

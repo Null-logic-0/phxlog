@@ -1,5 +1,16 @@
 alias Phxlog.Repo
 alias Phxlog.Blogs.Blog
+alias Phxlog.Accounts.User
+import Ecto.Changeset
+
+%User{}
+|> change(%{
+  full_name: "John Doe",
+  email: "admin@example.com",
+  is_admin: true,
+  confirmed_at: DateTime.utc_now() |> DateTime.truncate(:second)
+})
+|> Repo.insert!(on_conflict: :nothing)
 
 titles = [
   "Getting Started with Phoenix LiveView",
