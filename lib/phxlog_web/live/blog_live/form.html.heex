@@ -1,0 +1,166 @@
+<Layouts.app flash={@flash}>
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-base-content tracking-tight">
+      {@page_title}
+    </h1>
+    <p class="mt-1.5 text-sm text-base-content/70">
+      Use this form to manage blog records in your database.
+    </p>
+  </div>
+
+  <div class="bg-base-100 rounded-2xl shadow-sm border border-base-300 overflow-hidden">
+    <.form
+      for={@form}
+      id="blog-form"
+      phx-change="validate"
+      phx-submit="save"
+      class="divide-y divide-base-300"
+    >
+      <div class="p-6 space-y-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-semibold text-base-content/80 uppercase tracking-wider">
+            Cover Photo
+          </h2>
+          <span class="text-xs text-base-content/50">
+            Max {@uploads.photo.max_entries} file · {trunc(
+              @uploads.photo.max_file_size / 1_000_000
+            )} MB limit
+          </span>
+        </div>
+
+        <.live_file_input upload={@uploads.photo} class="sr-only" />
+
+        <%= if @blog.id && @blog.image_path && Enum.empty?(@uploads.photo.entries) do %>
+          <div class="relative group rounded-xl overflow-hidden border border-base-300">
+            <img
+              src={@blog.image_path}
+              alt="Current cover photo"
+              class="w-full h-52 object-cover"
+            />
+            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+              <span class="text-white text-sm font-medium bg-black/50 px-3 py-1 rounded-full">
+                Upload new photo to replace
+              </span>
+            </div>
+            <div class="absolute top-3 left-3 bg-base-100/90 backdrop-blur-sm text-xs font-medium text-base-content/70 px-2.5 py-1 rounded-full shadow-sm">
+              Current photo
+            </div>
+          </div>
+        <% end %>
+
+        <%= if Enum.empty?(@uploads.photo.entries) do %>
+          <div
+            phx-drop-target={@uploads.photo.ref}
+            class="border-2 border-dashed border-base-300 rounded-xl p-8 text-center hover:border-primary hover:bg-base-200 transition-colors cursor-pointer"
+          >
+            <label
+              for={@uploads.photo.ref}
+              class="cursor-pointer flex flex-col items-center gap-2"
+            >
+              <div class="w-12 h-12 bg-base-200 rounded-full flex items-center justify-center">
+                <.icon name="hero-cloud-arrow-up" class="size-6 text-base-content/60" />
+              </div>
+              <div>
+                <span class="text-sm font-medium text-base-content">
+                  Click to upload
+                </span>
+                <span class="text-sm text-base-content/50">
+                  or drag and drop
+                </span>
+              </div>
+              <p class="text-xs text-base-content/50">PNG, JPG, WebP</p>
+            </label>
+          </div>
+        <% end %>
+
+        <p
+          :for={err <- upload_errors(@uploads.photo)}
+          class="flex items-center gap-1.5 text-sm text-error"
+        >
+          {Phoenix.Naming.humanize(err)}
+        </p>
+
+        <div
+          :if={entry = List.first(@uploads.photo.entries)}
+          class="rounded-xl overflow-hidden border border-base-300"
+        >
+          <div class="relative">
+            <.live_img_preview entry={entry} class="w-full h-52 object-cover" />
+            <button
+              type="button"
+              phx-click="cancel"
+              phx-value-ref={entry.ref}
+              class="absolute cursor-pointer top-3 right-3 w-8 h-8 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center backdrop-blur-sm transition-colors"
+              aria-label="Remove photo"
+            >
+              &times;
+            </button>
+          </div>
+
+          <div
+            :if={entry.progress > 0 && entry.progress < 100}
+            class="px-4 py-3 bg-base-200 border-t border-base-300"
+          >
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-xs text-base-content/60">Uploading…</span>
+              <span class="text-xs font-medium text-base-content">
+                {entry.progress}%
+              </span>
+            </div>
+            <div class="w-full h-1.5 bg-base-300 rounded-full overflow-hidden">
+              <div
+                class="h-full bg-primary rounded-full transition-all duration-300"
+                style={"width: #{entry.progress}%"}
+              >
+              </div>
+            </div>
+          </div>
+
+          <p
+            :for={err <- upload_errors(@uploads.photo, entry)}
+            class="px-4 py-2 bg-error/10 text-sm text-error border-t border-error/20"
+          >
+            {Phoenix.Naming.humanize(err)}
+          </p>
+        </div>
+      </div>
+
+      <div class="p-6 space-y-5">
+        <h2 class="text-sm font-semibold text-base-content/80 uppercase tracking-wider">
+          Post Details
+        </h2>
+
+        <.input
+          field={@form[:title]}
+          type="text"
+          label="Title"
+          class="block input input-bordered w-full"
+        />
+
+        <.input
+          field={@form[:content]}
+          type="textarea"
+          label="Content"
+          class="block textarea textarea-bordered w-full"
+        />
+      </div>
+
+      <div class="px-6 py-4 bg-base-200 flex items-center justify-end gap-3">
+        <.button
+          navigate={return_path(@return_to, @blog)}
+          class="px-4 py-2 text-sm cursor-pointer font-medium text-base-content bg-base-100 border border-base-300 rounded-lg hover:bg-base-200 transition-colors"
+        >
+          Cancel
+        </.button>
+
+        <.button
+          phx-disable-with="Saving…"
+          variant="primary"
+          class="px-5 py-2 text-sm cursor-pointer font-medium text-primary-content bg-primary rounded-lg hover:opacity-90 transition-colors disabled:opacity-50"
+        >
+          Save Blog
+        </.button>
+      </div>
+    </.form>
+  </div>
+</Layouts.app>

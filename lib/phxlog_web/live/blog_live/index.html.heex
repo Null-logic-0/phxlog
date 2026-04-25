@@ -1,0 +1,73 @@
+<Layouts.app flash={@flash}>
+  <h1 class="text-center mb-6 text-4xl font-bold">{@page_title}</h1>
+  <div class="flex w-full items-center justify-between pb-6">
+    <.live_component
+      module={PhxlogWeb.Blogs.Search}
+      id="blog-index-search"
+      form={@form}
+      navigate_to={~p"/blogs"}
+    />
+    <.button variant="primary" navigate={~p"/blogs/new"}>
+      <.icon name="hero-plus" /> New Blog
+    </.button>
+  </div>
+
+  <.loading_state :if={is_nil(@blogs_count)} />
+
+  <.error_state :if={@blogs_error} reason={@blogs_error} />
+
+  <.empty_state
+    :if={@blogs_count == 0}
+    icon="hero-newspaper"
+    label={if @searching?, do: "No results found", else: "No blogs yet"}
+    sublabel={
+      if @searching?,
+        do: "Try a different search term",
+        else: "Create your first blog post"
+    }
+  />
+
+  <div :if={@blogs_count && @blogs_count > 0}>
+    <.table
+      id="blogs"
+      rows={@streams.blogs}
+      row_click={fn {_id, blog} -> JS.navigate(~p"/blogs/#{blog}") end}
+    >
+      <:col :let={{_id, blog}} label="Title">
+        <div class="flex items-center gap-2">
+          <img
+            src={blog.image_path}
+            alt={blog.title}
+            class="w-14 h-14 object-cover rounded-lg"
+          />
+          <p class="text-sm font-medium">{blog.title}</p>
+        </div>
+      </:col>
+      <:action :let={{_id, blog}}>
+        <div class="sr-only">
+          <.link navigate={~p"/blogs/#{blog}"}>Show</.link>
+        </div>
+        <.link navigate={~p"/blogs/#{blog}/edit"}>
+          <.icon name="hero-pencil-square" class="size-5 text-info" />
+        </.link>
+      </:action>
+      <:action :let={{id, blog}}>
+        <.link
+          phx-click={JS.push("delete", value: %{id: blog.id}) |> hide("##{id}")}
+          data-confirm="Are you sure?"
+        >
+          <.icon name="hero-trash" class="size-5 text-error" />
+        </.link>
+      </:action>
+    </.table>
+
+    <.live_component
+      :if={@meta && @meta.total_pages > 1 && !@searching?}
+      module={PhxlogWeb.Blogs.Pagination}
+      id="blog-index-pagination"
+      meta={@meta}
+      base_path={~p"/blogs"}
+      q={@form[:q].value}
+    />
+  </div>
+</Layouts.app>

@@ -1,0 +1,29 @@
+<Layouts.app flash={@flash}>
+  <div class="flex w-full items-center justify-between pb-6">
+    <h1 class="text-4xl font-bold">{@page_title}</h1>
+    <.live_component
+      module={PhxlogWeb.Blogs.Search}
+      id="blog-search"
+      form={@form}
+    />
+  </div>
+  <.blog_grid
+    blogs={@streams.blogs}
+    count={@blogs_count}
+    error={@blogs_error}
+    empty_label={if @searching?, do: "No results found", else: "No blogs yet"}
+    empty_sublabel={
+      if @searching?,
+        do: "Try a different search term",
+        else: "Check back soon for new posts"
+    }
+  />
+  <.live_component
+    :if={@meta && @meta.total_pages > 1 && !@searching?}
+    module={PhxlogWeb.Blogs.Pagination}
+    id="blog-pagination"
+    meta={@meta}
+    base_path={~p"/"}
+    q={@form[:q].value}
+  />
+</Layouts.app>
