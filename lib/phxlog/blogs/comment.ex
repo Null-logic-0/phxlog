@@ -1,4 +1,16 @@
 defmodule Phxlog.Blogs.Comment do
+  @moduledoc """
+  Comment schema.
+
+  Represents a user-generated comment attached to a blog post.
+
+  Each comment:
+  - Belongs to a blog
+  - Belongs to a user
+  - Contains textual content
+
+  Used for creating, updating, and displaying discussions on blogs.
+  """
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -14,7 +26,7 @@ defmodule Phxlog.Blogs.Comment do
   @doc false
   def changeset(comment, attrs, user_scope) do
     comment
-    |> cast(attrs, [:content,])
+    |> cast(attrs, [:content])
     |> validate_required([:content])
     |> validate_length(:content, max: 200)
     |> put_assoc(:user, user_scope.user)

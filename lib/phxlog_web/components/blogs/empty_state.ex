@@ -1,6 +1,29 @@
 defmodule PhxlogWeb.Blogs.EmptyState do
+  @moduledoc """
+  Reusable empty state UI component.
+
+  Displays a centered message with an icon, title, and subtitle.
+  Used for cases where no data is available (e.g. empty blog list).
+  """
   use PhxlogWeb, :html
 
+  @doc """
+  Renders an empty state block.
+
+  ## Assigns
+
+    * `:label` - main message shown to the user
+    * `:sublabel` - secondary helper text
+    * `:icon` - heroicon name to display (default: "hero-newspaper")
+
+  ## Example
+
+      <.empty_state
+        label="No blogs yet"
+        sublabel="Check back soon"
+        icon="hero-document-text"
+      />
+  """
   attr :label, :string, default: "Nothing here yet"
   attr :sublabel, :string, default: "Check back soon"
   attr :icon, :string, default: "hero-newspaper"

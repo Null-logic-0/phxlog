@@ -1,5 +1,35 @@
 defmodule PhxlogWeb.Blogs.Search do
+  @moduledoc """
+  LiveComponent search input for blog filtering.
+
+  Provides debounced search input that emits events to the parent LiveView.
+  Designed for real-time blog search with minimal state.
+  """
+
   use PhxlogWeb, :live_component
+
+  @doc """
+  Renders a search input field.
+
+  ## Assigns
+
+    * `:id` - DOM id for the component (required)
+    * `:form` - Phoenix form struct containing search value
+    * `:navigate_to` - optional navigation path (currently unused in render logic)
+    * `:placeholder` - input placeholder text
+
+  ## Events
+
+    * Sends `{:search, query}` to parent LiveView on input change (debounced)
+
+  ## Example
+
+      <.live_component
+        module={PhxlogWeb.Blogs.Search}
+        id="blog-search"
+        form={@form}
+      />
+  """
 
   attr :form, :any, required: true
   attr :navigate_to, :string, default: "/"

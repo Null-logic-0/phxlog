@@ -1,5 +1,37 @@
 defmodule PhxlogWeb.Comments.CommentsToggle do
+  @moduledoc """
+  Toggle component for showing and hiding the comments section.
+
+  Displays:
+  - Comments header
+  - Total number of comments
+  - Animated chevron indicator
+
+  Uses `Phoenix.LiveView.JS` for smooth show/hide transitions.
+  """
+
   use PhxlogWeb, :html
+
+  @doc """
+  Renders a toggle button for the comments panel.
+
+  ## Assigns
+
+    * `:comments_list` - list of comments used to display total count
+
+  ## Behavior
+
+  - Toggles visibility of `#comments-panel`
+  - Animates panel in/out with transitions
+  - Rotates chevron icon to indicate state
+  - Displays total number of comments
+
+  ## Example
+
+      <.comments_toggle comments_list={@comments_list} />
+  """
+
+  attr :comments_list, :list, required: true
 
   def comments_toggle(assigns) do
     ~H"""

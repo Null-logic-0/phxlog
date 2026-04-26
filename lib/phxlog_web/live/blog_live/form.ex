@@ -1,4 +1,16 @@
 defmodule PhxlogWeb.BlogLive.Form do
+  @moduledoc """
+  LiveView responsible for creating and editing blog posts.
+
+  Features:
+  - Blog creation and editing
+  - Form validation via changesets
+  - Image upload handling (single file upload)
+  - Navigation after save (index or show)
+  - Flash messaging on success/failure
+
+  This module is used for admin blog management flows.
+  """
   use PhxlogWeb, :live_view
 
   alias Phxlog.Blogs

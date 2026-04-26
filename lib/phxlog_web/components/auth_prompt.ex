@@ -1,5 +1,31 @@
 defmodule PhxlogWeb.Components.AuthPrompt do
+  @moduledoc """
+  Reusable authentication prompt component.
+
+  Displays a call-to-action encouraging unauthenticated users
+  to log in before performing actions such as commenting or liking.
+  """
+
   use PhxlogWeb, :html
+
+  @doc """
+  Renders an authentication prompt UI.
+
+  ## Assigns
+
+    * `:current_scope` - current user scope (nil if not logged in)
+
+  ## Behavior
+
+  - Only renders when user is not authenticated (`current_scope == nil`)
+  - Provides link to login page
+
+  ## Example
+
+      <.auth_prompt current_scope={@current_scope} />
+  """
+
+  attr :current_scope, :any, default: nil
 
   def auth_prompt(assigns) do
     ~H"""

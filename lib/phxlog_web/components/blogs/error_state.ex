@@ -1,5 +1,24 @@
 defmodule PhxlogWeb.Blogs.ErrorState do
+  @moduledoc """
+  Reusable error state UI component.
+
+  Displays a styled error message block with an icon and reason text.
+  Used when blog data fails to load or an operation returns an error.
+  """
   use PhxlogWeb, :html
+
+  @doc """
+  Renders an error state message.
+
+  ## Assigns
+
+    * `:reason` - error message to display (required)
+
+  ## Example
+
+      <.error_state reason="Database connection failed" />
+  """
+  attr :reason, :string, required: true
 
   def error_state(assigns) do
     ~H"""

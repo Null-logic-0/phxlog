@@ -1,5 +1,20 @@
 defmodule PhxlogWeb.Comments.CommentsLive do
+  @moduledoc """
+  LiveComponent responsible for managing and rendering the full comments system.
+
+  This component orchestrates:
+  - Comment list rendering (via streams)
+  - Comment creation and editing
+  - Pagination / "load more"
+  - UI states (loading, error, empty)
+  - Authentication gating
+
+  It acts as a thin UI layer and delegates actual business logic to the parent LiveView
+  via message passing (`send(self(), ...)`).
+  """
+
   use PhxlogWeb, :live_component
+
   import PhxlogWeb.Comments.LoadMore
   import PhxlogWeb.Comments.EmptyState
   import PhxlogWeb.Comments.ErrorState
@@ -9,6 +24,19 @@ defmodule PhxlogWeb.Comments.CommentsLive do
   import PhxlogWeb.Comments.CommentFormInput
   import PhxlogWeb.Comments.CommentsToggle
 
+  @doc """
+  Updates the component state based on incoming assigns.
+
+  Supports multiple update modes:
+
+  - `:reset_comments` → replaces entire comment stream
+  - `:append_comments` → appends comments to stream
+  - `:stream_insert_comment` → inserts a single comment into stream
+  - `:stream_delete_comment` → removes a comment from stream
+  - default → assigns values without modifying stream
+
+  Internally uses `Phoenix.LiveView.stream/3` for efficient DOM updates.
+  """
   def update(%{reset_comments: comments} = assigns, socket) do
     socket =
       socket
@@ -72,6 +100,40 @@ defmodule PhxlogWeb.Comments.CommentsLive do
     ])
   end
 
+  @doc """
+  Renders the comments section UI.
+
+  ## Assigns
+
+    * `:comments_list` - raw list of comments (used for state checks)
+    * `:streams.comments` - LiveView stream for rendering comments
+    * `:comment_form` - form for creating comments
+    * `:edit_form` - form for editing comments
+    * `:editing_comment_id` - ID of comment currently being edited
+    * `:current_scope` - current user scope (authentication)
+    * `:comments_loading` - loading state flag
+    * `:comments_error` - error state
+    * `:comments_has_more` - whether more comments can be loaded
+    * `:myself` - LiveComponent reference
+
+  ## Behavior
+
+  - Uses streams for efficient real-time updates
+  - Shows form if user is authenticated
+  - Shows auth prompt if user is not authenticated
+  - Handles loading, error, and empty states
+  - Supports inline editing of comments
+  - Supports "load more" pagination
+
+  ## Composition
+
+  Built from smaller components:
+  - `CommentFormInput`
+  - `CommentList`
+  - `LoadMore`
+  - `EmptyState`, `ErrorState`, `LoadingState`
+  - `AuthPrompt`
+  """
   def render(assigns) do
     ~H"""
     <section class="w-full space-y-8">
@@ -110,6 +172,8 @@ defmodule PhxlogWeb.Comments.CommentsLive do
     </section>
     """
   end
+
+  @doc false
 
   def handle_event("validate_comment", %{"comment" => params}, socket) do
     send(self(), {:comments_live, :validate_comment, params})

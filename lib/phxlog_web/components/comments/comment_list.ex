@@ -1,8 +1,51 @@
 defmodule PhxlogWeb.Comments.CommentList do
+  @moduledoc """
+  Comment list UI component.
+
+  Responsible for rendering a list of comments with support for:
+  - Stream updates (`phx-update="stream"`)
+  - Inline editing
+  - Conditional styling for active (editing) comment
+
+  Composes smaller components:
+  - `CommentMeta` (author, timestamp)
+  - `CommentBody` (content + actions)
+  - `CommentFormInput` (edit form)
+  """
+
   use PhxlogWeb, :html
   import PhxlogWeb.Comments.CommentMeta
   import PhxlogWeb.Comments.CommentBody
   import PhxlogWeb.Comments.CommentFormInput
+
+  @doc """
+  Renders a list of comments.
+
+  ## Assigns
+
+    * `:comments` - list/stream of `{dom_id, comment}` tuples (required)
+    * `:editing_comment_id` - ID of the comment currently being edited
+    * `:current_scope` - current user scope (used for permissions)
+    * `:myself` - LiveComponent reference for event targeting
+    * `:edit_form` - form struct used when editing a comment
+
+  ## Behavior
+
+  - Uses `phx-update="stream"` for efficient real-time updates
+  - Highlights the comment being edited
+  - Shows edit form inline when a comment is in edit mode
+  - Delegates rendering to smaller, composable components
+
+  ## Example
+
+      <.comment_list
+        comments={@streams.comments}
+        editing_comment_id={@editing_comment_id}
+        current_scope={@current_scope}
+        myself={@myself}
+        edit_form={@edit_form}
+      />
+  """
 
   attr :comments, :list, required: true
   attr :editing_comment_id, :any, required: true

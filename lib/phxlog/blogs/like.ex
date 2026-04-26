@@ -1,4 +1,15 @@
 defmodule Phxlog.Blogs.Like do
+  @moduledoc """
+  Like schema.
+
+  Represents a user's "like" reaction on a blog post.
+
+  This is a join table between:
+  - users
+  - blogs
+
+  Each user can like a blog only once (enforced by unique constraint).
+  """
   use Ecto.Schema
   import Ecto.Changeset
 

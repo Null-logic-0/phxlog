@@ -1,4 +1,17 @@
 defmodule PhxlogWeb.BlogLive.Show do
+  @moduledoc """
+  LiveView responsible for displaying a single blog post.
+
+  This module orchestrates:
+  - Blog fetching and real-time updates
+  - Comments system (delegated to Comments sub-module)
+  - Likes system (delegated to Likes sub-module)
+  - Featured blogs sidebar
+  - PubSub subscriptions for live updates
+
+  This is the main blog detail page.
+  """
+
   use PhxlogWeb, :live_view
 
   alias Phxlog.Blogs
@@ -10,6 +23,9 @@ defmodule PhxlogWeb.BlogLive.Show do
 
   @comments_per_page 5
 
+  @doc """
+  Initializes base LiveView state for comments and UI flags.
+  """
   def mount(_params, _session, socket) do
     {:ok,
      socket
@@ -20,6 +36,14 @@ defmodule PhxlogWeb.BlogLive.Show do
      |> assign(:comments_error, nil)}
   end
 
+  @doc """
+  Loads the blog post and subscribes to PubSub topics.
+
+  Also initializes:
+  - likes state
+  - comments pagination
+  - featured blogs async loading
+  """
   def handle_params(%{"id" => id}, _uri, socket) do
     blog = Blogs.get_blog!(id)
 
@@ -39,30 +63,37 @@ defmodule PhxlogWeb.BlogLive.Show do
     {:noreply, socket}
   end
 
-  # delegate async
+  @doc false
   def handle_async(:load_comments, result, socket),
     do: PhxlogWeb.BlogLive.Show.Comments.handle_async(:load_comments, result, socket)
 
-  # delegate handle_info — comments
+  @doc false
   def handle_info({:comments_live, _, _} = msg, socket),
     do: PhxlogWeb.BlogLive.Show.Comments.handle_info(msg, socket)
 
+  @doc false
   def handle_info({:comments_live, _, _, _} = msg, socket),
     do: PhxlogWeb.BlogLive.Show.Comments.handle_info(msg, socket)
 
+  @doc false
   def handle_info({:comments_live, :load_more_comments} = msg, socket),
     do: PhxlogWeb.BlogLive.Show.Comments.handle_info(msg, socket)
 
+  @doc false
   def handle_info({event, _} = msg, socket) when event in [:created, :updated, :deleted],
     do: PhxlogWeb.BlogLive.Show.Comments.handle_info(msg, socket)
 
-  # delegate handle_info — likes
+  @doc false
   def handle_info({event, _} = msg, socket) when event in [:likes_updated, :like_live],
     do: PhxlogWeb.BlogLive.Show.Likes.handle_info(msg, socket)
 
+  @doc false
   def handle_info({:like_live, _} = msg, socket),
     do: PhxlogWeb.BlogLive.Show.Likes.handle_info(msg, socket)
 
+  @doc """
+  Updates blog when it changes via PubSub.
+  """
   def handle_info({:blog_updated, blog}, socket) do
     {:noreply, assign(socket, :blog, blog)}
   end

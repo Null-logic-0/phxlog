@@ -1,6 +1,54 @@
 defmodule PhxlogWeb.Components.LikeLive do
+  @moduledoc """
+  LiveComponent responsible for handling blog likes.
+
+  This component provides an interactive like button with optimistic UI updates.
+
+  Responsibilities:
+  - Toggle like/unlike state for a blog
+  - Optimistically update like count in the UI
+  - Communicate with `Phxlog.Blogs` context for persistence
+  - Notify parent LiveView on auth or error events
+
+  This is a stateful LiveComponent and maintains local UI state.
+  """
+
   use PhxlogWeb, :live_component
+
   alias Phxlog.Blogs
+
+  @doc """
+  Renders the like button UI.
+
+  ## Assigns
+
+    * `:id` - unique DOM id for the component
+    * `:blog` - the blog being liked/unliked
+    * `:liked` - whether current user has liked the blog
+    * `:likes_count` - total number of likes
+    * `:current_scope` - current user scope (used for auth)
+
+  ## Events
+
+    * `"toggle_like"` - toggles like state
+
+  ## Behavior
+
+  - If user is not logged in, sends `{:like_live, :not_logged_in}` to parent
+  - If toggle fails, sends `{:like_live, :error}`
+  - Otherwise updates UI optimistically
+
+  ## Example
+
+      <.live_component
+        module={PhxlogWeb.Components.LikeLive}
+        id={"like-{@blog.id}"}
+        blog={@blog}
+        liked={@liked}
+        likes_count={@likes_count}
+        current_scope={@current_scope}
+      />
+  """
 
   def update(assigns, socket) do
     {:ok, assign(socket, assigns)}
@@ -27,6 +75,7 @@ defmodule PhxlogWeb.Components.LikeLive do
     """
   end
 
+  @doc false
   def handle_event("toggle_like", _params, socket) do
     case socket.assigns[:current_scope] do
       nil ->

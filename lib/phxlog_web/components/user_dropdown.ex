@@ -1,4 +1,4 @@
-defmodule PhxlogWeb.UserDropdown do
+defmodule PhxlogWeb.Components.UserDropdown do
   use PhxlogWeb, :html
 
   @doc """

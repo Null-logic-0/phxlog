@@ -4,7 +4,7 @@ defmodule PhxlogWeb.Layouts do
   used by your application.
   """
   use PhxlogWeb, :html
-  import PhxlogWeb.NavMenu
+  import PhxlogWeb.Components.NavMenu
 
   # Embed all files in layouts/* within this module.
   # The default root.html.heex file contains the HTML
@@ -70,8 +70,8 @@ defmodule PhxlogWeb.Layouts do
   def flash_group(assigns) do
     ~H"""
     <div id={@id} aria-live="polite">
-      <.flash kind={:info} flash={@flash} />
-      <.flash kind={:error} flash={@flash} />
+      <.flash kind={:info} flash={@flash} phx-hook=".auto_dismiss" id="flash-info" />
+      <.flash kind={:error} flash={@flash} phx-hook=".auto_dismiss" id="flash-error" />
 
       <.flash
         id="client-error"
@@ -97,6 +97,17 @@ defmodule PhxlogWeb.Layouts do
         <.icon name="hero-arrow-path" class="ml-1 size-3 motion-safe:animate-spin" />
       </.flash>
     </div>
+    <script :type={Phoenix.LiveView.ColocatedHook} name=".auto_dismiss">
+      export default {
+        mounted() {
+          setTimeout(() => {
+            this.el.style.transition = "opacity 0.5s"
+            this.el.style.opacity = "0"
+            setTimeout(() => this.el.remove(), 500)
+          }, 2000)
+        }
+      }
+    </script>
     """
   end
 end

@@ -1,5 +1,39 @@
 defmodule PhxlogWeb.Blogs.Pagination do
+  @moduledoc """
+  LiveComponent for paginating blog listings.
+
+  Provides navigation between pages with:
+  - Previous / Next controls
+  - Page number links
+  - Query parameter preservation (search support)
+  """
   use PhxlogWeb, :live_component
+
+  @doc """
+  Renders pagination controls.
+
+  ## Assigns
+
+    * `:id` - DOM id for the component (required)
+    * `:meta` - pagination metadata (must include `page`, `total_pages`, `has_prev`, `has_next`)
+    * `:base_path` - base route for pagination links (default: "/")
+    * `:q` - optional search query string to preserve across pages
+
+  ## Example
+
+      <.live_component
+        module={PhxlogWeb.Blogs.Pagination}
+        id="blogs-pagination"
+        meta={@meta}
+        base_path="/blogs"
+        q={@q}
+      />
+  """
+
+  attr :id, :string, required: true
+  attr :meta, :map, required: true
+  attr :base_path, :string, default: "/"
+  attr :q, :string, default: ""
 
   def render(assigns) do
     ~H"""
@@ -42,6 +76,7 @@ defmodule PhxlogWeb.Blogs.Pagination do
     {:ok, socket}
   end
 
+  @doc false
   defp build_params(page, q) when q in ["", nil], do: URI.encode_query(%{"page" => page})
   defp build_params(page, q), do: URI.encode_query(%{"page" => page, "q" => q})
 end

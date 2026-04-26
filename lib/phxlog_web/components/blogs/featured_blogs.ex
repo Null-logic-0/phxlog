@@ -1,9 +1,44 @@
 defmodule PhxlogWeb.Blogs.FeaturedBlogs do
+  @moduledoc """
+  Featured blogs section component.
+
+  Displays a curated list of featured blogs with full async state handling:
+
+  - Loading state
+  - Error state
+  - Empty state
+  - Grid of featured blog cards
+
+  Built on top of `AsyncResult` for LiveView-friendly async rendering.
+  """
   use PhxlogWeb, :html
+
   import PhxlogWeb.Blogs.BlogCard
   import PhxlogWeb.Blogs.LoadingState
   import PhxlogWeb.Blogs.ErrorState
   import PhxlogWeb.Blogs.EmptyState
+
+  @doc """
+  Renders the featured blogs section.
+
+  ## Assigns
+
+    * `:blogs` - async result containing a list of blogs
+
+  ## Behavior
+
+  Uses `<.async_result>` to handle:
+
+    - Loading state → shows `LoadingState`
+    - Failure state → shows `ErrorState`
+    - Empty result → shows `EmptyState`
+    - Success → renders blog grid
+
+  ## Example
+
+      <.featured_blogs blogs={@featured_blogs} />
+  """
+  attr :blogs, :any, required: true
 
   def featured_blogs(assigns) do
     ~H"""

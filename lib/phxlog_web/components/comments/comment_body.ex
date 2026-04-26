@@ -1,5 +1,47 @@
 defmodule PhxlogWeb.Comments.CommentBody do
+  @moduledoc """
+  Comment body UI component.
+
+  Responsible for rendering:
+  - Comment content
+  - Edit/Delete actions (for comment owner only)
+  - Conditional UI for editing state
+
+  This component is used inside comment lists and supports inline editing.
+  """
+
   use PhxlogWeb, :html
+
+  @doc """
+  Renders the body of a comment.
+
+  ## Assigns
+
+    * `:comment` - comment struct (required)
+    * `:editing_comment_id` - currently edited comment ID
+    * `:current_scope` - current user scope (used for permission checks)
+    * `:myself` - LiveComponent reference for event targeting
+
+  ## Behavior
+
+  - Shows comment content when not editing
+  - Shows edit/delete actions only for comment owner
+  - Hides content when comment is in editing state
+
+  ## Events
+
+    * `"edit_comment"` - triggers edit mode for comment
+    * `"delete_comment"` - deletes comment (with confirmation)
+
+  ## Example
+
+      <.comment_body
+        comment={@comment}
+        editing_comment_id={@editing_comment_id}
+        current_scope={@current_scope}
+        myself={@myself}
+      />
+  """
 
   attr :comment, :any, required: true
   attr :editing_comment_id, :any, required: true

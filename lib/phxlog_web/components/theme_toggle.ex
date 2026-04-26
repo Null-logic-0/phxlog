@@ -1,4 +1,4 @@
-defmodule PhxlogWeb.ThemeToggle do
+defmodule PhxlogWeb.Components.ThemeToggle do
   use PhxlogWeb, :html
 
   @doc """

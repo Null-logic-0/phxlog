@@ -1,4 +1,18 @@
 defmodule PhxlogWeb.BlogLive.Show.Comments do
+  @moduledoc """
+  Comments domain logic for `PhxlogWeb.BlogLive.Show`.
+
+  This module is responsible for:
+
+  - Loading paginated comments asynchronously
+  - Handling comment CRUD events (create, update, delete)
+  - Managing optimistic UI updates via `CommentsLive`
+  - Coordinating comment forms (create + edit states)
+  - Synchronizing LiveView state with PubSub events
+
+  It acts as the "comments state controller" for the Blog show page.
+  """
+
   import Phoenix.LiveView
   import Phoenix.Component
 
@@ -7,6 +21,16 @@ defmodule PhxlogWeb.BlogLive.Show.Comments do
 
   @comments_per_page 5
 
+  @doc """
+  Initializes comment state for a blog post.
+
+  Sets up:
+  - empty comment list
+  - pagination state
+  - loading + error flags
+  - comment and edit forms
+  - async loading of first page
+  """
   def assign_comments(socket, blog, per_page) do
     socket
     |> assign(:editing_comment_id, nil)
@@ -21,6 +45,7 @@ defmodule PhxlogWeb.BlogLive.Show.Comments do
     end)
   end
 
+  @doc false
   def handle_async(:load_comments, {:ok, {comments, has_more}}, socket) do
     page = socket.assigns.comments_page
 
@@ -47,6 +72,7 @@ defmodule PhxlogWeb.BlogLive.Show.Comments do
      )}
   end
 
+  @doc false
   def handle_async(:load_comments, {:exit, reason}, socket) do
     {:noreply,
      socket
@@ -54,6 +80,7 @@ defmodule PhxlogWeb.BlogLive.Show.Comments do
      |> Phoenix.Component.assign(:comments_error, inspect(reason))}
   end
 
+  @doc false
   def handle_info({:comments_live, :load_more_comments}, socket) do
     %{blog: blog, comments_page: page, comments_loading: loading, comments_has_more: has_more} =
       socket.assigns
@@ -73,6 +100,7 @@ defmodule PhxlogWeb.BlogLive.Show.Comments do
     end
   end
 
+  @doc false
   def handle_info({:comments_live, :validate_comment, params}, socket) do
     form =
       Blogs.change_comment(socket.assigns.current_scope, %Comment{}, params)
@@ -82,6 +110,7 @@ defmodule PhxlogWeb.BlogLive.Show.Comments do
     {:noreply, Phoenix.Component.assign(socket, :comment_form, form)}
   end
 
+  @doc false
   def handle_info({:comments_live, :create_comment, params}, socket) do
     case Blogs.create_comment(socket.assigns.current_scope, socket.assigns.blog, params) do
       {:ok, _} ->
@@ -93,6 +122,7 @@ defmodule PhxlogWeb.BlogLive.Show.Comments do
     end
   end
 
+  @doc false
   def handle_info({:comments_live, :edit_comment, id}, socket) do
     id = String.to_integer(id)
     comment = Enum.find(socket.assigns.comments, &(&1.id == id))
@@ -112,6 +142,7 @@ defmodule PhxlogWeb.BlogLive.Show.Comments do
      |> Phoenix.Component.assign(:edit_form, edit_form)}
   end
 
+  @doc false
   def handle_info({:comments_live, :cancel_edit}, socket) do
     prev_id = socket.assigns.editing_comment_id
     comment = Enum.find(socket.assigns.comments, &(&1.id == prev_id))
@@ -126,6 +157,7 @@ defmodule PhxlogWeb.BlogLive.Show.Comments do
     {:noreply, Phoenix.Component.assign(socket, :editing_comment_id, nil)}
   end
 
+  @doc false
   def handle_info({:comments_live, :validate_edit, params, id}, socket) do
     comment = Enum.find(socket.assigns.comments, &(&1.id == String.to_integer(id)))
 
@@ -137,6 +169,7 @@ defmodule PhxlogWeb.BlogLive.Show.Comments do
     {:noreply, Phoenix.Component.assign(socket, :edit_form, form)}
   end
 
+  @doc false
   def handle_info({:comments_live, :update_comment, params, id}, socket) do
     comment = Enum.find(socket.assigns.comments, &(&1.id == String.to_integer(id)))
 
@@ -150,12 +183,14 @@ defmodule PhxlogWeb.BlogLive.Show.Comments do
     end
   end
 
+  @doc false
   def handle_info({:comments_live, :delete_comment, id}, socket) do
     comment = Enum.find(socket.assigns.comments, &(&1.id == String.to_integer(id)))
     {:ok, _} = Blogs.delete_comment(socket.assigns.current_scope, socket.assigns.blog, comment)
     {:noreply, socket}
   end
 
+  @doc false
   def handle_info({:created, comment}, socket) do
     Phoenix.LiveView.send_update(PhxlogWeb.Comments.CommentsLive,
       id: "comments",
@@ -165,6 +200,7 @@ defmodule PhxlogWeb.BlogLive.Show.Comments do
     {:noreply, Phoenix.Component.assign(socket, :comments, [comment | socket.assigns.comments])}
   end
 
+  @doc false
   def handle_info({:updated, comment}, socket) do
     Phoenix.LiveView.send_update(PhxlogWeb.Comments.CommentsLive,
       id: "comments",
@@ -179,6 +215,7 @@ defmodule PhxlogWeb.BlogLive.Show.Comments do
      )}
   end
 
+  @doc false
   def handle_info({:deleted, comment}, socket) do
     Phoenix.LiveView.send_update(PhxlogWeb.Comments.CommentsLive,
       id: "comments",

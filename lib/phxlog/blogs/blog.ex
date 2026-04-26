@@ -1,4 +1,16 @@
 defmodule Phxlog.Blogs.Blog do
+  @moduledoc """
+  Blog schema.
+
+  Represents a blog post with:
+  - Title and content
+  - Optional image
+  - Associated comments and likes
+
+  This schema is used throughout the Blogs context for
+  creating, updating, and querying blog posts.
+  """
+
   use Ecto.Schema
   import Ecto.Changeset
 

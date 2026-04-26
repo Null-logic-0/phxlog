@@ -1,6 +1,49 @@
 defmodule PhxlogWeb.Comments.CommentFormInput do
+  @moduledoc """
+  Reusable comment form component.
+
+  Handles both:
+  - Creating new comments
+  - Editing existing comments
+
+  Provides:
+  - Character counter with limit feedback
+  - Submit / cancel actions
+  - Live validation via `phx-change`
+  """
+
   use PhxlogWeb, :html
 
+  @doc """
+  Renders a comment form input.
+
+  ## Assigns
+
+    * `:form` - Phoenix form struct (required)
+    * `:submit` - submit event name (required)
+    * `:change` - change event name (required)
+    * `:cancel` - cancel event name (optional)
+    * `:hidden_id` - comment id (used for edit mode)
+    * `:myself` - LiveComponent target
+
+  ## Behavior
+
+  - If `hidden_id` is present → edit mode
+  - Otherwise → create mode
+  - Shows remaining character count (200 limit)
+  - Supports cancel action when editing
+
+  ## Example
+
+      <.comment_form_input
+        form={@form}
+        submit="save_comment"
+        change="validate_comment"
+        cancel="cancel_edit"
+        hidden_id={@editing_comment_id}
+        myself={@myself}
+      />
+  """
   attr :form, :any, required: true
   attr :submit, :string, required: true
   attr :change, :string, required: true

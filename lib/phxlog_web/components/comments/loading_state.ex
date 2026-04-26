@@ -1,5 +1,37 @@
 defmodule PhxlogWeb.Comments.LoadingState do
+  @moduledoc """
+  Loading state component for the comments section.
+
+  Displays a skeleton UI while comments are being loaded for the first time.
+  """
+
   use PhxlogWeb, :html
+
+  @doc """
+  Renders a loading skeleton for comments.
+
+  ## Assigns
+
+    * `:comments_loading` - loading state flag
+    * `:comments` - current list of comments
+
+  ## Behavior
+
+  - Only renders when:
+    - `comments_loading` is true
+    - `comments` is empty (initial load)
+  - Displays multiple placeholder rows with animated pulse effect
+
+  ## Example
+
+      <.loading_state
+        comments_loading={@comments_loading}
+        comments={@comments_list}
+      />
+  """
+
+  attr :comments_loading, :boolean, default: false
+  attr :comments, :list, default: []
 
   def loading_state(assigns) do
     ~H"""

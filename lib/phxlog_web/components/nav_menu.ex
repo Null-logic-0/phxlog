@@ -1,8 +1,8 @@
-defmodule PhxlogWeb.NavMenu do
+defmodule PhxlogWeb.Components.NavMenu do
   use PhxlogWeb, :html
 
-  import PhxlogWeb.UserDropdown
-  import PhxlogWeb.ThemeToggle
+  import PhxlogWeb.Components.UserDropdown
+  import PhxlogWeb.Components.ThemeToggle
 
   @doc """
   Renders the navigation menu with a user dropdown.

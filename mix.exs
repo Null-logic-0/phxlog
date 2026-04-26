@@ -67,7 +67,8 @@ defmodule Phxlog.MixProject do
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.2.0"},
       {:bandit, "~> 1.5"},
-      {:pagex_pagination, "~> 0.2.3"}
+      {:pagex_pagination, "~> 0.2.3"},
+      {:ex_doc, "~> 0.34", only: :dev, runtime: false, warn_if_outdated: true}
     ]
   end
 

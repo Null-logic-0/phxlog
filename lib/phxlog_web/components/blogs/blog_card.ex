@@ -1,5 +1,47 @@
 defmodule PhxlogWeb.Blogs.BlogCard do
+  @moduledoc """
+  UI component for rendering a blog preview card.
+
+  Displays:
+  - Blog image (or fallback placeholder)
+  - Title
+  - Short content preview
+  - Publication date
+  - "Read more" indicator
+
+  Designed to be used in blog listings, grids, or feeds.
+  """
   use PhxlogWeb, :html
+  alias Phxlog.Blogs.Blog
+
+  @doc """
+  Renders a blog card.
+
+  ## Assigns
+
+    * `:blog` - `%Blog{}` struct (required)
+
+  ## Slots
+
+    * `:image` - override image section
+    * `:title` - override title
+    * `:content` - override content preview
+    * `:meta` - override footer/meta section
+
+  ## Examples
+
+      <.blog_card blog={@blog} />
+
+      <.blog_card blog={@blog}>
+        <:title>
+          <h2 class="text-lg font-bold text-red-500">
+            {@blog.title}
+          </h2>
+        </:title>
+      </.blog_card>
+  """
+
+  attr :blog, Blog, required: true
 
   def blog_card(assigns) do
     ~H"""
