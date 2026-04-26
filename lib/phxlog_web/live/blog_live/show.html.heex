@@ -13,6 +13,15 @@
     <img src={@blog.image_path} alt={@blog.title} class="w-full h-full object-cover" />
   </div>
 
+  <.live_component
+    module={PhxlogWeb.Components.LikeLive}
+    id="like-button"
+    liked={@liked}
+    likes_count={@likes_count}
+    blog={@blog}
+    current_scope={@current_scope}
+  />
+
   <div class="prose prose-base max-w-none mb-16 text-base-content/80 leading-relaxed">
     <p>{@blog.content}</p>
   </div>

@@ -1,7 +1,9 @@
 alias Phxlog.Repo
-alias Phxlog.Accounts.User
 alias Phxlog.Blogs.Blog
+alias Phxlog.Blogs.Like
+alias Phxlog.Accounts.User
 alias Phxlog.Blogs.Comment
+
 
 import Ecto.Changeset
 
@@ -133,5 +135,23 @@ Enum.each(blogs, fn blog ->
     |> Repo.insert!()
   end)
 end)
+
+# Insert Likes (up to 20 unique likes per blog)
+
+Enum.each(blogs, fn blog ->
+  users
+  |> Enum.shuffle()
+  |> Enum.take(20)
+  |> Enum.each(fn user ->
+    %Like{}
+    |> Ecto.Changeset.change(%{
+      blog_id: blog.id,
+      user_id: user.id
+    })
+    |> Repo.insert!(on_conflict: :nothing, conflict_target: [:blog_id, :user_id])
+  end)
+end)
+
+IO.puts("✅ Likes inserted successfully!")
 
 IO.puts("✅ Seeds inserted successfully!")

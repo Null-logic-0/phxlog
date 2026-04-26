@@ -36,6 +36,8 @@ defmodule PhxlogWeb.BlogLive.Show do
       |> assign(:comments_page, 1)
       |> assign(:comments_loading, true)
       |> assign(:comments_error, nil)
+      |> assign(:likes_count, Blogs.likes_count(blog))
+      |> assign(:liked, Blogs.liked_by_user?(blog, socket.assigns[:current_scope]))
       |> assign_async(:featured_blogs, fn ->
         {:ok, %{featured_blogs: Blogs.featured_blogs(blog)}}
       end)
@@ -219,6 +221,24 @@ defmodule PhxlogWeb.BlogLive.Show do
 
     {:noreply,
      assign(socket, :comments, Enum.reject(socket.assigns.comments, &(&1.id == comment.id)))}
+  end
+
+  def handle_info({:likes_updated, count}, socket) do
+    send_update(PhxlogWeb.Components.LikeLive,
+      id: "like-button",
+      likes_count: count,
+      liked: Blogs.liked_by_user?(socket.assigns.blog, socket.assigns[:current_scope])
+    )
+
+    {:noreply, socket}
+  end
+
+  def handle_info({:like_live, :not_logged_in}, socket) do
+    {:noreply, put_flash(socket, :error, "You must be logged in to like.")}
+  end
+
+  def handle_info({:like_live, :error}, socket) do
+    {:noreply, put_flash(socket, :error, "Something went wrong.")}
   end
 
   defp comment_form(socket) do

@@ -148,4 +148,40 @@ defmodule Phxlog.Blogs do
   def change_comment(%Scope{} = scope, %Comment{} = comment, attrs \\ %{}) do
     Comment.changeset(comment, attrs, scope)
   end
+
+  alias Phxlog.Blogs.Like
+
+  alias Phxlog.Blogs.Like
+
+  def liked_by_user?(_blog, nil), do: false
+
+  def liked_by_user?(blog, scope) do
+    Repo.exists?(from l in Like, where: l.blog_id == ^blog.id and l.user_id == ^scope.user.id)
+  end
+
+  def likes_count(blog) do
+    Repo.aggregate(from(l in Like, where: l.blog_id == ^blog.id), :count)
+  end
+
+  def toggle_like(scope, blog) do
+    case Repo.get_by(Like, blog_id: blog.id, user_id: scope.user.id) do
+      nil ->
+        %Like{}
+        |> Ecto.Changeset.change(%{blog_id: blog.id, user_id: scope.user.id})
+        |> Repo.insert()
+        |> case do
+          {:ok, _} -> broadcast_likes(blog)
+          {:error, _} -> :error
+        end
+
+      like ->
+        {:ok, _} = Repo.delete(like)
+        broadcast_likes(blog)
+    end
+  end
+
+  defp broadcast_likes(blog) do
+    count = likes_count(blog)
+    Phoenix.PubSub.broadcast(Phxlog.PubSub, "blog:#{blog.id}", {:likes_updated, count})
+  end
 end
