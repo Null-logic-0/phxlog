@@ -121,6 +121,7 @@ defmodule PhxlogWeb.BlogLive.Form do
     end
   end
 
+  defp return_path("show", %{id: nil}), do: ~p"/admin/blogs"
   defp return_path("index", _blog), do: ~p"/admin/blogs"
   defp return_path("show", blog), do: ~p"/blogs/#{blog}"
 end

@@ -1,24 +1,19 @@
 defmodule Phxlog.BlogsFixtures do
-  # def blog_fixture(attrs \\ %{}) do
-  #   {:ok, blog} =
-  #     attrs
-  #     |> Enum.into(%{
-  #       content: "some content",
-  #       image_path: "some image_path",
-  #       title: "some title"
-  #     })
-  #     |> Phxlog.Blogs.create_blog()
+  import Phxlog.AccountsFixtures
+  alias Phxlog.Blogs
 
-  #   blog
-  # end
+  def blog_fixture(attrs \\ %{}) do
+    user = user_fixture()
 
-  # def comment_fixture(scope, attrs \\ %{}) do
-  #   attrs =
-  #     Enum.into(attrs, %{
-  #       content: "some content"
-  #     })
+    attrs =
+      Enum.into(attrs, %{
+        title: "Test Blog #{System.unique_integer()}",
+        content: "Some content",
+        image_path: "https://example.com/image.jpg",
+        user_id: user.id
+      })
 
-  #   {:ok, comment} = Phxlog.Blogs.create_comment(scope, attrs)
-  #   comment
-  # end
+    {:ok, blog} = Blogs.create_blog(attrs)
+    blog
+  end
 end

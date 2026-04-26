@@ -50,6 +50,9 @@ defmodule PhxlogWeb.BlogLive.Show do
   def handle_info({:comments_live, _, _, _} = msg, socket),
     do: PhxlogWeb.BlogLive.Show.Comments.handle_info(msg, socket)
 
+  def handle_info({:comments_live, :load_more_comments} = msg, socket),
+    do: PhxlogWeb.BlogLive.Show.Comments.handle_info(msg, socket)
+
   def handle_info({event, _} = msg, socket) when event in [:created, :updated, :deleted],
     do: PhxlogWeb.BlogLive.Show.Comments.handle_info(msg, socket)
 

@@ -14,7 +14,8 @@ defmodule Phxlog.AccountsFixtures do
 
   def valid_user_attributes(attrs \\ %{}) do
     Enum.into(attrs, %{
-      email: unique_user_email()
+      email: unique_user_email(),
+      full_name: "John Doe"
     })
   end
 
@@ -39,6 +40,17 @@ defmodule Phxlog.AccountsFixtures do
       Accounts.login_user_by_magic_link(token)
 
     user
+  end
+
+  def admin_user_fixture(attrs \\ %{}) do
+    user = user_fixture(attrs)
+
+    Phxlog.Repo.update_all(
+      from(u in Phxlog.Accounts.User, where: u.id == ^user.id),
+      set: [is_admin: true]
+    )
+
+    Phxlog.Repo.get!(Phxlog.Accounts.User, user.id)
   end
 
   def user_scope_fixture do

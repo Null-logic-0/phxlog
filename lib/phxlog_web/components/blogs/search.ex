@@ -40,9 +40,7 @@ defmodule PhxlogWeb.Blogs.Search do
   end
 
   def handle_event("search", %{"q" => q}, socket) do
-    params = if q == "", do: %{}, else: %{"q" => q}
-
-    {:noreply,
-     push_navigate(socket, to: socket.assigns.navigate_to <> "?#{URI.encode_query(params)}")}
+    send(self(), {:search, q})
+    {:noreply, socket}
   end
 end

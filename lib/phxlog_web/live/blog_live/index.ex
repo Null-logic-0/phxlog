@@ -100,4 +100,9 @@ defmodule PhxlogWeb.BlogLive.Index do
       handle_params(params, nil, socket)
     end
   end
+
+  def handle_info({:search, q}, socket) do
+    params = if q == "", do: %{}, else: %{"q" => q}
+    {:noreply, push_patch(socket, to: ~p"/admin/blogs?#{params}")}
+  end
 end

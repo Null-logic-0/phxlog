@@ -17,7 +17,7 @@ defmodule Phxlog.Blogs.Blog do
   def changeset(blog, attrs) do
     blog
     |> cast(attrs, [:title, :content, :image_path])
-    |> validate_required([:title, :content, :image_path])
+    |> validate_required([:title, :content])
     |> validate_length(:title, min: 3, max: 70)
     |> validate_length(:content, max: 500)
   end

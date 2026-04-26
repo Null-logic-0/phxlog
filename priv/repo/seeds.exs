@@ -4,7 +4,6 @@ alias Phxlog.Blogs.Like
 alias Phxlog.Accounts.User
 alias Phxlog.Blogs.Comment
 
-
 import Ecto.Changeset
 
 now = DateTime.utc_now() |> DateTime.truncate(:second)
