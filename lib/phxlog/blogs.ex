@@ -75,4 +75,77 @@ defmodule Phxlog.Blogs do
   end
 
   defp tap_broadcast({:error, _} = err, _event), do: err
+
+  alias Phxlog.Blogs.Comment
+  alias Phxlog.Accounts.Scope
+
+  def subscribe_comments(%Blog{} = blog) do
+    Phoenix.PubSub.subscribe(Phxlog.PubSub, "blog:#{blog.id}:comments")
+  end
+
+  defp broadcast_comment(%Blog{} = blog, message) do
+    Phoenix.PubSub.broadcast(Phxlog.PubSub, "blog:#{blog.id}:comments", message)
+  end
+
+  def list_comments(%Blog{} = blog, opts \\ []) do
+    page = Keyword.get(opts, :page, 1)
+    per_page = Keyword.get(opts, :per_page, 10)
+    offset = (page - 1) * per_page
+
+    comments =
+      Comment
+      |> where([c], c.blog_id == ^blog.id)
+      |> order_by(desc: :inserted_at)
+      |> limit(^(per_page + 1))
+      |> offset(^offset)
+      |> preload(:user)
+      |> Repo.all()
+
+    has_more = length(comments) > per_page
+    {Enum.take(comments, per_page), has_more}
+  end
+
+  def get_comment!(%Blog{} = blog, id) do
+    Comment
+    |> where([c], c.id == ^id and c.blog_id == ^blog.id)
+    |> preload(:user)
+    |> Repo.one!()
+  end
+
+  def create_comment(%Scope{} = scope, %Blog{} = blog, attrs) do
+    with {:ok, comment} <-
+           %Comment{blog_id: blog.id}
+           |> Comment.changeset(attrs, scope)
+           |> Repo.insert() do
+      comment = Repo.preload(comment, :user)
+      broadcast_comment(blog, {:created, comment})
+      {:ok, comment}
+    end
+  end
+
+  def update_comment(%Scope{} = scope, %Blog{} = blog, %Comment{} = comment, attrs) do
+    true = comment.user_id == scope.user.id
+
+    with {:ok, comment} <-
+           comment
+           |> Comment.changeset(attrs, scope)
+           |> Repo.update() do
+      comment = Repo.preload(comment, :user)
+      broadcast_comment(blog, {:updated, comment})
+      {:ok, comment}
+    end
+  end
+
+  def delete_comment(%Scope{} = scope, %Blog{} = blog, %Comment{} = comment) do
+    true = comment.user_id == scope.user.id
+
+    with {:ok, comment} <- Repo.delete(comment) do
+      broadcast_comment(blog, {:deleted, comment})
+      {:ok, comment}
+    end
+  end
+
+  def change_comment(%Scope{} = scope, %Comment{} = comment, attrs \\ %{}) do
+    Comment.changeset(comment, attrs, scope)
+  end
 end

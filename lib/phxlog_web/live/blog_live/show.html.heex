@@ -1,0 +1,39 @@
+<Layouts.app flash={@flash} current_scope={@current_scope}>
+  <div class="mb-8">
+    <.link
+      navigate={~p"/"}
+      class="inline-flex items-center gap-1.5 text-sm text-base-content/50 hover:text-base-content transition-colors mb-4"
+    >
+      <.icon name="hero-arrow-left" class="size-4" /> Back
+    </.link>
+    <h1 class="text-4xl font-bold text-base-content leading-tight">{@blog.title}</h1>
+  </div>
+
+  <div class="rounded-box overflow-hidden mb-10 aspect-video">
+    <img src={@blog.image_path} alt={@blog.title} class="w-full h-full object-cover" />
+  </div>
+
+  <div class="prose prose-base max-w-none mb-16 text-base-content/80 leading-relaxed">
+    <p>{@blog.content}</p>
+  </div>
+
+  <div class="divider mb-10"></div>
+
+  <.live_component
+    module={PhxlogWeb.Comments.CommentsLive}
+    id="comments"
+    comments_list={@comments}
+    comments_page={@comments_page}
+    comments_has_more={@comments_has_more}
+    comments_loading={@comments_loading}
+    comments_error={@comments_error}
+    comment_form={@comment_form}
+    edit_form={@edit_form}
+    editing_comment_id={@editing_comment_id}
+    current_scope={@current_scope}
+  />
+
+  <div class="divider my-12"></div>
+
+  <.featured_blogs blogs={@featured_blogs} />
+</Layouts.app>

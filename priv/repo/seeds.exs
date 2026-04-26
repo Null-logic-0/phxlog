@@ -1,17 +1,38 @@
 alias Phxlog.Repo
-alias Phxlog.Blogs.Blog
 alias Phxlog.Accounts.User
+alias Phxlog.Blogs.Blog
+alias Phxlog.Blogs.Comment
+
 import Ecto.Changeset
 
+now = DateTime.utc_now() |> DateTime.truncate(:second)
+
+#  Admin user
 %User{}
 |> change(%{
-  full_name: "John Doe",
+  full_name: "Admin",
   email: "admin@example.com",
   is_admin: true,
-  confirmed_at: DateTime.utc_now() |> DateTime.truncate(:second)
+  confirmed_at: now
 })
-|> Repo.insert!(on_conflict: :nothing)
+|> Repo.insert!(on_conflict: :nothing, conflict_target: :email)
 
+# 20 Users
+Enum.each(1..20, fn i ->
+  %User{}
+  |> change(%{
+    full_name: "User #{i}",
+    email: "user#{i}@example.com",
+    is_admin: false,
+    confirmed_at: now
+  })
+  |> Repo.insert!(on_conflict: :nothing, conflict_target: :email)
+end)
+
+# Reload users (important!)
+users = Repo.all(User)
+
+#  Blog data
 titles = [
   "Getting Started with Phoenix LiveView",
   "Why Elixir is Built for Concurrency",
@@ -58,13 +79,59 @@ images = [
   "https://images.unsplash.com/photo-1461749280684-dccba630e2f6"
 ]
 
-Enum.with_index(titles)
-|> Enum.each(fn {title, i} ->
-  %Blog{}
-  |> Blog.changeset(%{
-    title: title,
-    content: "#{title} — Practical guide to Phoenix & Elixir.",
-    image_path: Enum.at(images, i) <> "?auto=format&fit=crop&w=800&q=80"
-  })
-  |> Repo.insert!()
+# Insert Blogs
+blogs =
+  Enum.with_index(titles)
+  |> Enum.map(fn {title, i} ->
+    user = Enum.random(users)
+
+    %Blog{}
+    |> Blog.changeset(%{
+      title: title,
+      content: "#{title} — Practical guide to Phoenix & Elixir.",
+      image_path: Enum.at(images, i) <> "?auto=format&fit=crop&w=800&q=80",
+      user_id: user.id
+    })
+    |> Repo.insert!()
+  end)
+
+# 💬 Comment content pool
+comments_content = [
+  "Great post!",
+  "Very helpful 🔥",
+  "Loved this explanation",
+  "Super clear, thanks!",
+  "This saved me hours",
+  "Nice work 👏",
+  "Can you go deeper on this?",
+  "Exactly what I needed",
+  "Clean and simple explanation",
+  "Elixir ❤️",
+  "Phoenix is amazing",
+  "This is gold",
+  "Bookmarking this",
+  "Helped me a lot",
+  "Well written!",
+  "Awesome guide",
+  "Thanks for sharing",
+  "Really insightful",
+  "Clear and practical",
+  "Perfect timing for me"
+]
+
+#  Insert Comments (20 per blog)
+Enum.each(blogs, fn blog ->
+  Enum.each(1..20, fn _ ->
+    user = Enum.random(users)
+
+    %Comment{}
+    |> change(%{
+      content: Enum.random(comments_content),
+      blog_id: blog.id,
+      user_id: user.id
+    })
+    |> Repo.insert!()
+  end)
 end)
+
+IO.puts("✅ Seeds inserted successfully!")

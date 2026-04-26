@@ -7,6 +7,8 @@ defmodule Phxlog.Blogs.Blog do
     field :content, :string
     field :image_path, :string
 
+    has_many :comments, Phxlog.Blogs.Comment
+
     timestamps(type: :utc_datetime)
   end
 

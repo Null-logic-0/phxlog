@@ -60,4 +60,90 @@ defmodule Phxlog.BlogsTest do
       assert %Ecto.Changeset{} = Blogs.change_blog(blog)
     end
   end
+
+  describe "comments" do
+    alias Phxlog.Blogs.Comment
+
+    import Phxlog.AccountsFixtures, only: [user_scope_fixture: 0]
+    import Phxlog.BlogsFixtures
+
+    @invalid_attrs %{content: nil}
+
+    test "list_comments/1 returns all scoped comments" do
+      scope = user_scope_fixture()
+      other_scope = user_scope_fixture()
+      comment = comment_fixture(scope)
+      other_comment = comment_fixture(other_scope)
+      assert Blogs.list_comments(scope) == [comment]
+      assert Blogs.list_comments(other_scope) == [other_comment]
+    end
+
+    test "get_comment!/2 returns the comment with given id" do
+      scope = user_scope_fixture()
+      comment = comment_fixture(scope)
+      other_scope = user_scope_fixture()
+      assert Blogs.get_comment!(scope, comment.id) == comment
+      assert_raise Ecto.NoResultsError, fn -> Blogs.get_comment!(other_scope, comment.id) end
+    end
+
+    test "create_comment/2 with valid data creates a comment" do
+      valid_attrs = %{content: "some content"}
+      scope = user_scope_fixture()
+
+      assert {:ok, %Comment{} = comment} = Blogs.create_comment(scope, valid_attrs)
+      assert comment.content == "some content"
+      assert comment.user_id == scope.user.id
+    end
+
+    test "create_comment/2 with invalid data returns error changeset" do
+      scope = user_scope_fixture()
+      assert {:error, %Ecto.Changeset{}} = Blogs.create_comment(scope, @invalid_attrs)
+    end
+
+    test "update_comment/3 with valid data updates the comment" do
+      scope = user_scope_fixture()
+      comment = comment_fixture(scope)
+      update_attrs = %{content: "some updated content"}
+
+      assert {:ok, %Comment{} = comment} = Blogs.update_comment(scope, comment, update_attrs)
+      assert comment.content == "some updated content"
+    end
+
+    test "update_comment/3 with invalid scope raises" do
+      scope = user_scope_fixture()
+      other_scope = user_scope_fixture()
+      comment = comment_fixture(scope)
+
+      assert_raise MatchError, fn ->
+        Blogs.update_comment(other_scope, comment, %{})
+      end
+    end
+
+    test "update_comment/3 with invalid data returns error changeset" do
+      scope = user_scope_fixture()
+      comment = comment_fixture(scope)
+      assert {:error, %Ecto.Changeset{}} = Blogs.update_comment(scope, comment, @invalid_attrs)
+      assert comment == Blogs.get_comment!(scope, comment.id)
+    end
+
+    test "delete_comment/2 deletes the comment" do
+      scope = user_scope_fixture()
+      comment = comment_fixture(scope)
+      assert {:ok, %Comment{}} = Blogs.delete_comment(scope, comment)
+      assert_raise Ecto.NoResultsError, fn -> Blogs.get_comment!(scope, comment.id) end
+    end
+
+    test "delete_comment/2 with invalid scope raises" do
+      scope = user_scope_fixture()
+      other_scope = user_scope_fixture()
+      comment = comment_fixture(scope)
+      assert_raise MatchError, fn -> Blogs.delete_comment(other_scope, comment) end
+    end
+
+    test "change_comment/2 returns a comment changeset" do
+      scope = user_scope_fixture()
+      comment = comment_fixture(scope)
+      assert %Ecto.Changeset{} = Blogs.change_comment(scope, comment)
+    end
+  end
 end
