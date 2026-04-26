@@ -39,6 +39,18 @@ Before you begin, ensure you have the following installed on your local machine:
 
 ----
 
+## 🎥 Demo
+
+
+https://github.com/user-attachments/assets/431dc088-f6f3-4f71-acb1-5652a07811fc
+
+https://github.com/user-attachments/assets/f807b0ea-4cc9-4072-a2f9-1593858ed676
+
+https://github.com/user-attachments/assets/b018697a-ebab-426f-9c1b-12cb32fc155c
+
+
+----
+
 ## 🚀 Getting Started
 
 Follow these steps to set up the project locally.
