@@ -1,18 +1,90 @@
-# Phxlog
+# 🚀 **PHXLOG** 
 
-To start your Phoenix server:
+![Elixir Version](https://img.shields.io/badge/Elixir-1.15-4e2a8e.svg?style=flat-square&logo=elixir)
+![Phoenix Version](https://img.shields.io/badge/Phoenix-1.8.5-fd4f00.svg?style=flat-square)
+![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)
 
-* Run `mix setup` to install and setup dependencies
-* Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+**Phxlog** is a modern blog application built with the Phoenix Framework and LiveView, designed for real-time, reactive web experiences with Elixir’s scalability and performance.
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+---
 
-## Learn more
+## ✨ Features
 
-* Official website: https://www.phoenixframework.org/
-* Guides: https://hexdocs.pm/phoenix/overview.html
-* Docs: https://hexdocs.pm/phoenix
-* Forum: https://elixirforum.com/c/phoenix-forum
-* Source: https://github.com/phoenixframework/phoenix
+- ⚡ Real-time UI powered by Phoenix LiveView
+- 🧱 Clean and maintainable MVC architecture
+- 🗃️ Database integration with Ecto & PostgreSQL
+- 🔐 Secure and scalable backend built with Elixir
+- 📦 Easy project setup with Mix tooling
+
+
+--- 
+
+## 🛠 Tech Stack
+
+- **Backend:** [Elixir 1.15](https://elixir-lang.org/) 
+- **Framework:** [Phoenix 1.8.5](https://www.phoenixframework.org/)
+- **Frontend:** [Phoenix LiveView](https://hexdocs.pm/phoenix_live_view/welcome.html)
+- **Database:** PostgreSQL (via Ecto)
+- **Build Tool:** Mix
+
+---
+
+## ⚙️ Prerequisites
+
+Before you begin, ensure you have the following installed on your local machine:
+* **Elixir** (v1.15+ recommended) - [Installation Guide](https://elixir-lang.org/install.html)
+* **Erlang/OTP** - [Installation Guide](https://www.erlang.org/downloads)
+* **PostgreSQL** (if using Ecto for database management)
+
+----
+
+## 🚀 Getting Started
+
+Follow these steps to set up the project locally.
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/Null-logic-0/phxlog.git
+cd phxlog
+```
+### 2. Install Dependencies
+```bash 
+mix setup
+```
+
+### 3. Run Tests 
+```bash 
+mix test
+```
+
+### 4. Read Docs 
+```bash 
+mix docs 
+```
+
+### 5. Start Server 
+```bash 
+mix phx.server
+```
+
+### 6. Visit the Application 
+
+Once the server is running, open your browser and navigate to:
+
+👉 **`` http://localhost:4000``**
+
+---- 
+
+## 🧪 Development Notes
+
+Ensure PostgreSQL is running before setup
+Default environment is dev
+Configuration can be found in ``config/``
+
+--- 
+
+## 📄 License
+
+This project is open-sourced software licensed under the MIT [License](LICENSE).
